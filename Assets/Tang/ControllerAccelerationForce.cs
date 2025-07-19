@@ -1,44 +1,53 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
 public class ControllerMotionForce : MonoBehaviour
 {
     [Header("Left Controller Tracking")]
-    public Transform leftController;  // 直接引用 XR 左手控制器的 Transform（如XR Origin下的子物体）
+    public Transform leftController;
+
+    [Header("Target to Apply Force")]
+    public Rigidbody targetRigidbody;
+    public Collider targetCollider;
 
     [Header("Force Settings")]
     public float velocityThreshold = 0.5f;
     public float forceMultiplier = 10f;
 
-    private Rigidbody rb;
-    private Vector3 lastPosition;
+    [Header("Ground Check")]
+    public float checkRadius = 0.1f;
+    public LayerMask wallLayerMask; // 设置为只包含 Wall Layer
 
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
+    private Vector3 lastPosition;
 
     private void Start()
     {
         if (leftController != null)
+        {
             lastPosition = leftController.position;
+        }
     }
 
     private void FixedUpdate()
     {
-        if (leftController == null)
+        if (leftController == null || targetRigidbody == null || targetCollider == null)
             return;
 
+        // Step 1: 检查是否接触 Wall
+        bool touchingWall = Physics.CheckSphere(targetCollider.bounds.center, checkRadius, wallLayerMask);
+
+        // Step 2: 若未接触 Wall，直接退出
+        if (!touchingWall)
+            return;
+
+        // Step 3: 计算控制器速度
         Vector3 currentPosition = leftController.position;
         Vector3 velocity = (currentPosition - lastPosition) / Time.fixedDeltaTime;
 
-        // ✅ Debug 输出速度和方向
-        Debug.Log($"Controller velocity: {velocity}, Magnitude: {velocity.magnitude}");
 
         if (velocity.magnitude > velocityThreshold)
         {
             Vector3 force = velocity.normalized * (velocity.magnitude - velocityThreshold) * forceMultiplier;
-            rb.AddForce(force, ForceMode.Impulse);
+            targetRigidbody.AddForce(force, ForceMode.Impulse);
         }
 
         lastPosition = currentPosition;
