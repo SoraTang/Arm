@@ -1,0 +1,94 @@
+{
+    "name": "PlayerInputActions",
+    "maps": [
+        {
+            "name": "Actions",
+            "id": "d364895e-7acb-4617-87b8-67cc951b435b",
+            "actions": [
+                {
+                    "name": "Grab",
+                    "type": "Button",
+                    "id": "1cd29ddc-d9ab-44df-bf0e-d86f2bbf28fe",
+                    "expectedControlType": "Button",
+                    "processors": "AxisDeadzone(min=0.4)",
+                    "interactions": "Hold",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightVelocity",
+                    "type": "Value",
+                    "id": "40523bec-9a6b-4186-9916-886943f6e852",
+                    "expectedControlType": "Vector3",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "TestGrab",
+                    "type": "Button",
+                    "id": "d29a69ec-16c9-4b32-9810-f23674a5085f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TestDetach",
+                    "type": "Button",
+                    "id": "787edb25-51a6-4cd6-af63-34184aecd92c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b300d0da-787e-4848-9ee2-bd63e55e1c3b",
+                    "path": "<XRController>{LeftHand}/grip",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grab",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "32ef7b07-2071-4100-bbbc-cabf75f1a179",
+                    "path": "<OculusTouchController>/devicePose/velocity",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightVelocity",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "53c1bae3-890c-458c-a89a-02c927bb35a3",
+                    "path": "<Keyboard>/#(F)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TestGrab",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0a4356af-a20d-4596-9445-fa58a7a2d69f",
+                    "path": "<Keyboard>/#(1)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TestDetach",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
