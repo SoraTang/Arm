@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2285992419399287155}
   - component: {fileID: 5118350096102279313}
   - component: {fileID: 459857193562695752}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrabSphere
   m_TagString: CanGrab
   m_Icon: {fileID: 0}

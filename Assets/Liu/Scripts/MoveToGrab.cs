@@ -51,19 +51,16 @@ public class MoveToGrab : MonoBehaviour
     {
         if (other.CompareTag("CanGrab"))
             overlaps.Add(other);
-        Debug.Log("OnTriggerEnter: " + other.name);
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("CanGrab"))
             overlaps.Remove(other);
-        Debug.Log($"OnTriggerExit: {other.name}, Remaining: {overlaps.Count}");
     }
 
     private void OnGrabPerformed(InputAction.CallbackContext ctx)
     {
-        Debug.Log("GRAB!");
         // 输入触发时才抓取
         TryGrabNearest();
     }
@@ -106,7 +103,7 @@ public class MoveToGrab : MonoBehaviour
         grabTween?.Kill();
 
         // 3. 缓存启动时 forearm 位置
-        Transform detachedHand = transform.parent.parent;
+        Transform detachedHand = transform.parent.parent.parent;
         Vector3 startPos = detachedHand.position;
 
         // 4. 创建 Tween
@@ -127,6 +124,7 @@ public class MoveToGrab : MonoBehaviour
                 // 强校正：再次计算并写死
                 Vector3 idealPos = target.position - transform.position + detachedHand.position;
                 detachedHand.position = idealPos;
+                target.transform.parent = transform;
             });
     }
 }

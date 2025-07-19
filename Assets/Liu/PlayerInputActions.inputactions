@@ -11,7 +11,7 @@
                     "id": "1cd29ddc-d9ab-44df-bf0e-d86f2bbf28fe",
                     "expectedControlType": "Button",
                     "processors": "AxisDeadzone(min=0.4)",
-                    "interactions": "Hold",
+                    "interactions": "",
                     "initialStateCheck": false
                 },
                 {

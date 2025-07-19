@@ -1,6 +1,7 @@
 // Runtime script: ArmCore.cs
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit;
 
 /// <summary>
 /// ArmCore with detachable functionality using a property: creates a holder named "DetachedHand" at Start,
@@ -38,6 +39,8 @@ public class ArmCore : MonoBehaviour
     Quaternion defaultRotation = Quaternion.Euler(0, 35, 0);
 
     public InputActionReference detachAction;
+
+    public XRGrabInteractable grabInteractable;
     
     void Start() => Initialize();
 
@@ -59,6 +62,20 @@ public class ArmCore : MonoBehaviour
             detachAction.action.performed += (context => {
                 Detached = !Detached; // Toggle detach state on action performed
             });
+        }
+
+        grabInteractable = GetComponent<XRGrabInteractable>();
+    }
+
+    void Update()
+    {
+        if (grabInteractable.isSelected)
+        {
+            Detached = true;
+            Debug.LogWarning("!!!");
+        } else 
+        {
+            Debug.Log($"detached:{Detached}");
         }
     }
 
