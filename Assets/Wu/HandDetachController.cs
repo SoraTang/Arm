@@ -33,7 +33,7 @@ public class HandDetachController : MonoBehaviour
         // 1. 禁用 IK
         GetComponent<TwoBoneIKConstraint>().weight = 0;
 
-        // 2. 禁用原始模型上的前臂 + 手（避免重叠）
+        // 2. 禁用原始模型上的前臂 + 手（避免重叠）s
         leftLowerArm.gameObject.SetActive(false);
 
         // 3. 实例化 detached 物体
