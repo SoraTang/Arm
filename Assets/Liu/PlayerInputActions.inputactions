@@ -40,6 +40,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "CallCallBack",
+                    "type": "Button",
+                    "id": "e8450751-50be-4048-a2dc-42f6034bbf9a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -84,6 +93,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "TestDetach",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "404c953a-6f43-4ab7-ae9a-0294dbe5973b",
+                    "path": "<XRController>{LeftHand}/secondaryButton",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CallCallBack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
