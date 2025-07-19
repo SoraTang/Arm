@@ -1,21 +1,15 @@
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class DetachedHand : MonoBehaviour
 {
-    public Transform leftController;
-    private bool isFollowing = false;
-
-    public void StartFollowing()
+    public Transform objectToAttach; // 要变为子物体的对象
+    public void OnSelectEnter(XRBaseInteractor interactor)
     {
-        isFollowing = true;
-    }
-
-    void Update()
-    {
-        if (isFollowing)
+        if (objectToAttach != null)
         {
-            transform.position = leftController.position;
-            transform.rotation = leftController.rotation;
+            objectToAttach.SetParent(transform);
         }
+        Debug.Log("OnSelectEnter");
     }
 }
