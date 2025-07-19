@@ -4592,6 +4592,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7715515419622648957}
   - component: {fileID: 9004899052569405404}
+  - component: {fileID: 3978103788014635266}
   m_Layer: 0
   m_Name: mixamorig:LeftForeArm
   m_TagString: Untagged
@@ -4635,7 +4636,30 @@ MonoBehaviour:
   grabInteractable: {fileID: 6658015854101187813}
   followTarget: {fileID: 6597962425836486061}
   fakeArmRigidbody: {fileID: 7078466652361323124}
+  detachedOnlyComponent: {fileID: 3978103788014635266}
   pullDuration: 0.2
+  objectToDisableWhenGrabbed: {fileID: 3642028059912322770}
+--- !u!114 &3978103788014635266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7290071758499726492}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87a59ad7f7dfe0449af3a40035838738, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftController: {fileID: 5196819769099157069}
+  targetRigidbody: {fileID: 7078466652361323124}
+  targetCollider: {fileID: 8648709051421285417}
+  velocityThreshold: 1
+  forceMultiplier: 0.5
+  checkRadius: 0.1
+  wallLayerMask:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!1 &7306040532429633831
 GameObject:
   m_ObjectHideFlags: 0
