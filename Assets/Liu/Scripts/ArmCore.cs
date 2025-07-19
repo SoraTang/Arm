@@ -44,7 +44,8 @@ public class ArmCore : MonoBehaviour
     public InputActionReference detachAction;
 
     public XRGrabInteractable grabInteractable;
-    public FollowTargetTransform followTarget; 
+    public FollowTargetTransform followTarget;
+    public Rigidbody fakeArmRigidbody;
 
     public float pullDuration = 0.2f;
     
@@ -85,6 +86,11 @@ public class ArmCore : MonoBehaviour
         {
             Detached = true;
         }
+        else 
+        {
+            fakeArmRigidbody.useGravity = Detached;
+        }
+
     }
 
     private void ApplyDetachState(bool state)
@@ -117,7 +123,7 @@ public class ArmCore : MonoBehaviour
 
         transform.parent.DOMove(originalParent.position, pullDuration)
             .SetEase(Ease.OutQuad) // 只在结束时使用 ease 感觉
-            .OnComplete(() => ApplyDetachState(false));
+            .OnComplete(() => Detached = false);
     }
     
 }

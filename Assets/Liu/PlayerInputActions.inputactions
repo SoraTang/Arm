@@ -11,13 +11,40 @@
                     "id": "1cd29ddc-d9ab-44df-bf0e-d86f2bbf28fe",
                     "expectedControlType": "Button",
                     "processors": "AxisDeadzone(min=0.4)",
-                    "interactions": "",
+                    "interactions": "Press",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "RightVelocity",
+                    "name": "GrabRelease",
+                    "type": "Button",
+                    "id": "92d06a35-b9d9-4eb3-89e0-28062295e6b1",
+                    "expectedControlType": "Button",
+                    "processors": "AxisDeadzone",
+                    "interactions": "Press(behavior=1)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "[RightVelocity]",
                     "type": "Value",
                     "id": "40523bec-9a6b-4186-9916-886943f6e852",
+                    "expectedControlType": "Vector3",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "LeftVelocity",
+                    "type": "Value",
+                    "id": "1d2f5ca9-ca94-4870-9d79-cf2f43993392",
+                    "expectedControlType": "Vector3",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "LeftAcc",
+                    "type": "Value",
+                    "id": "d0971f34-e57b-4515-b680-a5ed000b0b82",
                     "expectedControlType": "Vector3",
                     "processors": "",
                     "interactions": "",
@@ -70,7 +97,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RightVelocity",
+                    "action": "[RightVelocity]",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -104,6 +131,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "CallCallBack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2eac3a57-1b94-42c3-862e-df46432ab200",
+                    "path": "<XRController>{LeftHand}/deviceVelocity",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftVelocity",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6e11b73c-2330-4903-af41-b9b6f46791ed",
+                    "path": "<XRController>{LeftHand}/deviceAcceleration",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftAcc",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4bae918f-379b-40fa-89e3-f4985d9d72f6",
+                    "path": "<XRController>{LeftHand}/grip",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "GrabRelease",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
