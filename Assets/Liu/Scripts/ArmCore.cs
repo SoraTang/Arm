@@ -30,6 +30,11 @@ public class ArmCore : MonoBehaviour
     [Header("抓取时禁用的物体")]
     public GameObject objectToDisableWhenGrabbed;
 
+    [Header("脱离手臂时碰撞器交换")]
+    public Collider detachedArmCollider;
+    public Collider defaultArmCollider;
+    
+
     [Header("回收设置")]
     public float pullDuration = 0.2f;
 
@@ -94,6 +99,8 @@ public class ArmCore : MonoBehaviour
             fakeArmRigidbody.useGravity = Detached;
             if (objectToDisableWhenGrabbed != null)
                 objectToDisableWhenGrabbed.SetActive(true);
+            detachedArmCollider.enabled = !Detached;
+            defaultArmCollider.enabled = Detached;
         }
     }
 
