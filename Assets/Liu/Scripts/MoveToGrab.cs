@@ -7,8 +7,12 @@ using DG.Tweening;
 [RequireComponent(typeof(Collider))]
 public class MoveToGrab : MonoBehaviour
 {
+    [Header("Arm")]
+    public ArmCore armCore;
+
     [Header("输入")] 
     public InputActionReference grabAction;    // Grab 动作
+    public InputActionReference grabReleaseAction;    // Grab Release 动作
 
     [Header("Tween 参数")]
     public float duration = 2f;
@@ -16,6 +20,7 @@ public class MoveToGrab : MonoBehaviour
 
     private Vector3 localHandOffset;   // 抓始时 Hand 的局部位移
     private Tweener grabTween;
+    private GameObject grabbedGameObject = null;
 
     // 当前在 Trigger 范围内的可抓取物体
     private readonly List<Collider> overlaps = new List<Collider>();
@@ -37,6 +42,9 @@ public class MoveToGrab : MonoBehaviour
         if (grabAction != null)
             grabAction.action.performed += OnGrabPerformed;
         grabAction?.action.Enable();
+        if (grabReleaseAction != null)
+            grabReleaseAction.action.performed += OnGrabReleased;
+        grabReleaseAction?.action.Enable();
     }
 
     private void OnDisable()
@@ -45,6 +53,9 @@ public class MoveToGrab : MonoBehaviour
         grabAction?.action.Disable();
         if (grabAction != null)
             grabAction.action.performed -= OnGrabPerformed;
+        grabReleaseAction?.action.Disable();
+        if (grabReleaseAction != null)
+            grabReleaseAction.action.performed -= OnGrabReleased;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -61,15 +72,26 @@ public class MoveToGrab : MonoBehaviour
 
     private void OnGrabPerformed(InputAction.CallbackContext ctx)
     {
-        // 输入触发时才抓取
-        TryGrabNearest();
+        // 输入触发，手拆下时才抓取
+        if (armCore.Detached)
+            TryGrabNearest();
+    }
+
+    private void OnGrabReleased(InputAction.CallbackContext ctx)
+    {
+        if (grabbedGameObject != null) {
+            grabbedGameObject.transform.parent = null;
+            overlaps.Remove(grabbedGameObject.GetComponent<Collider>());
+            grabbedGameObject = null;
+        }
+
     }
 
     private void TryGrabNearest()
     {
         if (overlaps.Count == 0)
         {
-            Debug.LogWarning("No objects to grab");
+            Debug.LogWarning("No object to grab");
             return;
         }
 
@@ -93,38 +115,52 @@ public class MoveToGrab : MonoBehaviour
             MoveToTarget(nearest.transform);
     }
 
-    private void MoveToTarget(Transform target)
-    {
-        // 1. 记录当前 Hand 的局部位移 (只需一次)
-        localHandOffset = transform.localPosition;
-        Debug.Log($"localHandOffset: {localHandOffset}");
-        
-        // 2. 终止旧 Tween
-        grabTween?.Kill();
+private void MoveToTarget(Transform target)
+{
+    // 1. 记录当前 Hand 的局部位移 (只需一次)
+    localHandOffset = transform.localPosition;
+    Debug.Log($"localHandOffset: {localHandOffset}");
 
-        // 3. 缓存启动时 forearm 位置
-        Transform detachedHand = transform.parent.parent.parent;
-        Vector3 startPos = detachedHand.position;
+    // 2. 终止旧 Tween
+    grabTween?.Kill();
 
-        // 4. 创建 Tween
-        grabTween = DOTween
-            .To(() => 0f, // 虚拟进度
-                t =>
-                {
-                    // 每帧根据最新 ForeArm 旋转重新计算理想位置
-                    Vector3 idealPos = target.position - transform.position + detachedHand.position;
+    // 3. 缓存启动时 forearm 位置
+    Transform detachedHand = transform.parent.parent.parent;
+    Vector3 startPos = detachedHand.position;
 
-                    // 插值到理想位置。Unclamped 可使曲线外推更平滑
-                    detachedHand.position = Vector3.LerpUnclamped(startPos, idealPos, t);
-                },
-                1f, duration)
-            .SetEase(easeType)
-            .OnComplete(() =>
+    // 4. 创建 Tween
+    grabTween = DOTween
+        .To(() => 0f, // 虚拟进度
+            t =>
             {
-                // 强校正：再次计算并写死
                 Vector3 idealPos = target.position - transform.position + detachedHand.position;
-                detachedHand.position = idealPos;
-                target.transform.parent = transform;
-            });
-    }
+                detachedHand.position = Vector3.LerpUnclamped(startPos, idealPos, t);
+            },
+            1f, duration)
+        .SetEase(easeType)
+        .OnComplete(() =>
+        {
+            // 强校正
+            Vector3 idealPos = target.position - transform.position + detachedHand.position;
+            detachedHand.position = idealPos;
+
+            // ✅ 设置为手部子对象
+            target.transform.parent = transform;
+
+            // ✅ 重置位置到手部中心
+            target.localPosition = Vector3.zero;
+            target.localRotation = Quaternion.identity;
+
+            // ✅ 清除 Rigidbody 运动
+            Rigidbody rb = target.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+
+            grabbedGameObject = target.gameObject;
+        });
+}
+
 }
