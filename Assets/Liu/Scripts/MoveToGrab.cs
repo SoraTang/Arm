@@ -22,6 +22,8 @@ public class MoveToGrab : MonoBehaviour
     private Tweener grabTween;
     private GameObject grabbedGameObject = null;
 
+    public Transform detachedHand;
+
     // 当前在 Trigger 范围内的可抓取物体
     private readonly List<Collider> overlaps = new List<Collider>();
 
@@ -60,13 +62,13 @@ public class MoveToGrab : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("CanGrab"))
+        if (other.CompareTag("CanGrab") || other.CompareTag("CanGrabStatic"))
             overlaps.Add(other);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("CanGrab"))
+        if (other.CompareTag("CanGrab") || other.CompareTag("CanGrabStatic"))
             overlaps.Remove(other);
     }
 
@@ -74,7 +76,15 @@ public class MoveToGrab : MonoBehaviour
     {
         // 输入触发，手拆下时才抓取
         if (armCore.Detached)
+        {
             TryGrabNearest();
+            Rigidbody detachedRb = detachedHand.GetComponent<Rigidbody>();
+            if (detachedRb != null)
+            {
+                // 设置 detachedHand 的 kinematic
+                detachedRb.isKinematic = true;
+            }
+        }
     }
 
     private void OnGrabReleased(InputAction.CallbackContext ctx)
@@ -83,6 +93,16 @@ public class MoveToGrab : MonoBehaviour
             grabbedGameObject.transform.parent = null;
             overlaps.Remove(grabbedGameObject.GetComponent<Collider>());
             grabbedGameObject = null;
+        }
+        
+        // 解除 detachedHand 的 kinematic
+        if (detachedHand != null)
+        {
+            Rigidbody detachedRb = detachedHand.GetComponent<Rigidbody>();
+            if (detachedRb != null)
+            {
+                detachedRb.isKinematic = false;
+            }
         }
 
     }
@@ -124,26 +144,21 @@ private void MoveToTarget(Transform target)
     // 2. 终止旧 Tween
     grabTween?.Kill();
 
-    // 3. 缓存启动时 forearm 位置
-    Transform detachedHand = transform.parent.parent.parent;
-    Vector3 startPos = detachedHand.position;
+    // 3. 缓存启动时目标位置
+    Vector3 startPos = target.position;
 
     // 4. 创建 Tween
     grabTween = DOTween
         .To(() => 0f, // 虚拟进度
             t =>
             {
-                Vector3 idealPos = target.position - transform.position + detachedHand.position;
-                detachedHand.position = Vector3.LerpUnclamped(startPos, idealPos, t);
+                Vector3 idealPos = transform.position;
+                target.position = Vector3.LerpUnclamped(startPos, idealPos, t);
             },
             1f, duration)
         .SetEase(easeType)
         .OnComplete(() =>
         {
-            // 强校正
-            Vector3 idealPos = target.position - transform.position + detachedHand.position;
-            detachedHand.position = idealPos;
-
             // ✅ 设置为手部子对象
             target.transform.parent = transform;
 
