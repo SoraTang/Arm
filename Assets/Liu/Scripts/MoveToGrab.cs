@@ -62,13 +62,13 @@ public class MoveToGrab : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("CanGrab") || other.CompareTag("CanGrabStatic"))
+        if (other.CompareTag("CanGrab"))
             overlaps.Add(other);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("CanGrab") || other.CompareTag("CanGrabStatic"))
+        if (other.CompareTag("CanGrab"))
             overlaps.Remove(other);
     }
 
