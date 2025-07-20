@@ -115,39 +115,52 @@ public class MoveToGrab : MonoBehaviour
             MoveToTarget(nearest.transform);
     }
 
-    private void MoveToTarget(Transform target)
-    {
-        // 1. 记录当前 Hand 的局部位移 (只需一次)
-        localHandOffset = transform.localPosition;
-        Debug.Log($"localHandOffset: {localHandOffset}");
-        
-        // 2. 终止旧 Tween
-        grabTween?.Kill();
+private void MoveToTarget(Transform target)
+{
+    // 1. 记录当前 Hand 的局部位移 (只需一次)
+    localHandOffset = transform.localPosition;
+    Debug.Log($"localHandOffset: {localHandOffset}");
 
-        // 3. 缓存启动时 forearm 位置
-        Transform detachedHand = transform.parent.parent.parent;
-        Vector3 startPos = detachedHand.position;
+    // 2. 终止旧 Tween
+    grabTween?.Kill();
 
-        // 4. 创建 Tween
-        grabTween = DOTween
-            .To(() => 0f, // 虚拟进度
-                t =>
-                {
-                    // 每帧根据最新 ForeArm 旋转重新计算理想位置
-                    Vector3 idealPos = target.position - transform.position + detachedHand.position;
+    // 3. 缓存启动时 forearm 位置
+    Transform detachedHand = transform.parent.parent.parent;
+    Vector3 startPos = detachedHand.position;
 
-                    // 插值到理想位置。Unclamped 可使曲线外推更平滑
-                    detachedHand.position = Vector3.LerpUnclamped(startPos, idealPos, t);
-                },
-                1f, duration)
-            .SetEase(easeType)
-            .OnComplete(() =>
+    // 4. 创建 Tween
+    grabTween = DOTween
+        .To(() => 0f, // 虚拟进度
+            t =>
             {
-                // 强校正：再次计算并写死
                 Vector3 idealPos = target.position - transform.position + detachedHand.position;
-                detachedHand.position = idealPos;
-                target.transform.parent = transform;
-                grabbedGameObject = target.gameObject;
-            });
-    }
+                detachedHand.position = Vector3.LerpUnclamped(startPos, idealPos, t);
+            },
+            1f, duration)
+        .SetEase(easeType)
+        .OnComplete(() =>
+        {
+            // 强校正
+            Vector3 idealPos = target.position - transform.position + detachedHand.position;
+            detachedHand.position = idealPos;
+
+            // ✅ 设置为手部子对象
+            target.transform.parent = transform;
+
+            // ✅ 重置位置到手部中心
+            target.localPosition = Vector3.zero;
+            target.localRotation = Quaternion.identity;
+
+            // ✅ 清除 Rigidbody 运动
+            Rigidbody rb = target.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+
+            grabbedGameObject = target.gameObject;
+        });
+}
+
 }
